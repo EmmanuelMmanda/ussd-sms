@@ -20,14 +20,14 @@ if ($text == "" && $isNotRegistered) {
     $response .= "1. Send Money \n";
     $response .= "2. Withdraw Money \n";
     $response .= "3. Check Balance \n";
-} else if ($text == "1") {
+} else if ($text == "1" && !$isNotRegistered) {
     # sending money
     $response = "END We will allow send Money Shorlty \n";
-} else if ($text == "2") {
+} else if ($text == "2"  && !$isNotRegistered) {
     #withdrawing money
     $response = "END We will allow withdraw Money Shorlty \n";
 
-} else if ($text == "3") {
+} else if ($text == "3"  && !$isNotRegistered) {
     #checking balance
     $response = "END Your Current balance is: .$balance.\n";
 }
