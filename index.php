@@ -30,6 +30,8 @@ if ($text == "" && $isNotRegistered) {
 } elseif ($text == "3") {
     #checking balance
     $response = "END Your Current balance is: .$balance.\n";
+} else {
+    return $response;
 }
 return $response;
 ?>
