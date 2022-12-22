@@ -5,7 +5,7 @@ $serviceCode = $_POST["serviceCode"];
 $phoneNumber = $_POST["phoneNumber"];
 $text = $_POST["text"];
 
-$isNotRegistered = true;
+$isNotRegistered = false;
 $username = "Emmanuel Mmanda";
 $balance = "100,000 Tsh";
 
