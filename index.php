@@ -14,24 +14,24 @@ if ($text == "" && $isNotRegistered) {
     $response = "CON Welcome to VICOBA, Choose 1 to Register: \n";
     $response .= "1. Register";
 
-} elseif ($text == "" && !$isNotRegistered) {
+} else if ($text == "" && !$isNotRegistered) {
     # initial and user is registered
     $response = "CON Welcome to VICOBA,.$username.  \n";
     $response .= "1. Send Money \n";
     $response .= "2. Withdraw Money \n";
     $response .= "3. Check Balance \n";
-} elseif ($text == "1") {
+} else if ($text == "1") {
     # sending money
     $response = "END We will allow send Money Shorlty \n";
-} elseif ($text == "2") {
+} else if ($text == "2") {
     #withdrawing money
     $response = "END We will allow withdraw Money Shorlty \n";
 
-} elseif ($text == "3") {
+} else if ($text == "3") {
     #checking balance
     $response = "END Your Current balance is: .$balance.\n";
 }
 //echo back the response to ApI
-header('content-type: plain/text');
+header('Content-type: plain/text');
 echo $response;
 ?>
