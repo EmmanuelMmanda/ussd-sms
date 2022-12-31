@@ -45,11 +45,10 @@ class Menu
                 $confirmPin = $textArray[3];
                 if ($pin != $confirmPin) {
                     echo ('END Your pins do not match !');
+                } else {
+                    echo ('END You have succesfully registered as ' . $fullname . ' ');
                 }
-                if ($pin === $confirmPin && $fullname === '') {
 
-                    echo ('END You have succesfully registered as ' . $fullname);
-                }
                 break;
             default:
                 break;
