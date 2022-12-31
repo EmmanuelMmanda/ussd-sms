@@ -13,7 +13,7 @@ class Menu
 
     public function mainMenuRegistered($u)
     {
-        $response = "CON Welcome to VICOBA .$u.  \n";
+        $response = "CON Welcome to VICOBA $u \n";
         $response .= "1. Send Money \n";
         $response .= "2. Withdraw Money \n";
         $response .= "3. Check Balance \n";
