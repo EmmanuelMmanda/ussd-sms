@@ -31,7 +31,7 @@ class Menu
         $level = count($textArray);
         switch ($level) {
             case '1':
-                echo ('CON Please enter your FullName ie. John Doe. \n');
+                echo ('CON Please enter your FullName ie. John Doe.');
                 break;
             case '2':
                 echo ('CON Enter your PIN');
@@ -45,8 +45,10 @@ class Menu
                 $confirmPin = $textArray[3];
                 if ($pin != $confirmPin) {
                     echo ('END Your pins do not match ! \n');
+                } elseif ($pin == $confirmPin and $fullname == '') {
+
+                    echo ('END You have succesfully registered as ' . $fullname);
                 }
-                echo ('END You have succesfully registered as ' . $fullname . '\n');
                 break;
             default:
                 break;
