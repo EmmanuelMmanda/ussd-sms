@@ -63,7 +63,6 @@ class Menu
         echo ($response);
     }
 
-
     public function checkBalanceMenu($b)
     {
         $response = "END Your Current balance is: .$b.\n";
