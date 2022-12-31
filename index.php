@@ -7,7 +7,7 @@ $phoneNumber = $_POST["phoneNumber"];
 $text = $_POST["text"];
 
 $isRegistered = true;
-$username = "Emmanuel Mmanda";
+$username = "Mr. Emmanuel Mmanda";
 $balance = "100,000 Tsh";
 
 $menu = new Menu($sessionId,$text);
