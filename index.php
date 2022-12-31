@@ -1,37 +1,37 @@
 <?php
+include_once('./menu.php');
 // Read the variables sent via POST from our API
 $sessionId = $_POST["sessionId"];
 $serviceCode = $_POST["serviceCode"];
 $phoneNumber = $_POST["phoneNumber"];
 $text = $_POST["text"];
 
-$isNotRegistered = false;
+$isRegistered = false;
 $username = "Emmanuel Mmanda";
 $balance = "100,000 Tsh";
 
-if ($text == "" && $isNotRegistered) {
+$menu = new Menu($sessionId,$text);
+
+if ($text == "" && !$isRegistered) {
     # initial and user not registered
-    $response = "CON Welcome to VICOBA, Choose 1 to Register: \n";
-    $response .= "1. Register";
+    $menu->mainMenuUnregisterd();
 
-} else if ($text == "" && !$isNotRegistered) {
+} else if ($text == "" && $isRegistered) {
     # initial and user is registered
-    $response = "CON Welcome to VICOBA,.$username.  \n";
-    $response .= "1. Send Money \n";
-    $response .= "2. Withdraw Money \n";
-    $response .= "3. Check Balance \n";
-} else if ($text == "1" && !$isNotRegistered) {
-    # sending money
-    $response = "END We will allow send Money Shorlty \n";
-} else if ($text == "2"  && !$isNotRegistered) {
-    #withdrawing money
-    $response = "END We will allow withdraw Money Shorlty \n";
+    $menu->mainMenuRegistered($username);
 
-} else if ($text == "3"  && !$isNotRegistered) {
+} else if ($text == "1" && $isRegistered) {
+    # sending money
+    $menu->sendmMoneyMenu();
+} else if ($text == "2" && $isRegistered) {
+    #withdrawing money
+    $menu->withdrawMoneymenu();
+
+} else if ($text == "3" && $isRegistered) {
     #checking balance
-    $response = "END Your Current balance is: .$balance.\n";
+    $menu->checkBalanceMenu($balance);
+} else {
+    # code...
 }
-//echo back the response to ApI
-header('Content-type: plain/text');
-echo $response;
+
 ?>
