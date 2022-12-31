@@ -10,7 +10,9 @@ $isRegistered = true;
 $username = "Mr. Emmanuel Mmanda";
 $balance = "100,000 Tsh";
 
-$menu = new Menu($sessionId,$text);
+$menu = new Menu($sessionId, $text);
+
+$textArray = explode("*", $text);
 
 if ($text == "" && !$isRegistered) {
     # initial and user not registered
@@ -20,18 +22,34 @@ if ($text == "" && !$isRegistered) {
     # initial and user is registered
     $menu->mainMenuRegistered($username);
 
-} else if ($text == "1" && $isRegistered) {
-    # sending money
-    $menu->sendmMoneyMenu();
-} else if ($text == "2" && $isRegistered) {
-    #withdrawing money
-    $menu->withdrawMoneymenu();
+} else if ($isRegistered) {
+    # sending money #withdrawing money #checking balance
 
-} else if ($text == "3" && $isRegistered) {
-    #checking balance
-    $menu->checkBalanceMenu($balance);
-} else {
+    switch ($textArray[0]) {
+
+        case '1':
+            $menu->sendmMoneyMenu();
+            break;
+        case '2':
+            $menu->withdrawMoneymenu();
+            break;
+        case '3':
+            $menu->checkBalanceMenu($balance);
+            break;
+        default:
+            echo ('END You have selected an invalid Option, Please try again. ');
+            break;
+    }
+} elseif (!$isRegistered) {
     # code...
+    switch ($textArray[0]) {
+        case '1':
+            $menu->registerMenu($textArray);
+            break;
+
+        default:
+            break;
+    }
 }
 
 ?>

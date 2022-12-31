@@ -26,9 +26,31 @@ class Menu
         $response .= "1. Register";
         echo ($response);
     }
-    public function registerMenu()
+    public function registerMenu($textArray)
     {
-
+        $level = count($textArray);
+        switch ($level) {
+            case '1':
+                echo ('CON Please enter your FullName ie. John Doe. \n');
+                break;
+            case '2':
+                echo ('CON Enter your PIN');
+                break;
+            case '3':
+                echo ('CON Confirm your PIN');
+                break;
+            case '4':
+                $fullname = $textArray[1];
+                $pin = $textArray[2];
+                $confirmPin = $textArray[3];
+                if ($pin != $confirmPin) {
+                    echo ('END Your pins do not match ! \n');
+                }
+                echo ('END You have succesfully registered as ' . $fullname . '\n');
+                break;
+            default:
+                break;
+        }
     }
     public function sendmMoneyMenu()
     {
