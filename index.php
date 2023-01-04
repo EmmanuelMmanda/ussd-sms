@@ -6,7 +6,7 @@ $serviceCode = $_POST["serviceCode"];
 $phoneNumber = $_POST["phoneNumber"];
 $text = $_POST["text"];
 
-$isRegistered = false;
+$isRegistered = true;
 $username = "Mr. Emmanuel Mmanda";
 $balance = "100,000 Tsh";
 
@@ -28,13 +28,13 @@ if ($text == "" && !$isRegistered) {
     switch ($textArray[0]) {
 
         case '1':
-            $menu->sendmMoneyMenu();
+            $menu->sendmMoneyMenu($textArray);
             break;
         case '2':
-            $menu->withdrawMoneymenu();
+            $menu->withdrawMoneymenu($textArray);
             break;
         case '3':
-            $menu->checkBalanceMenu($balance);
+            $menu->checkBalanceMenu($balance,$textArray);
             break;
         default:
             echo ('END You have selected an invalid Option, Please try again. ');
