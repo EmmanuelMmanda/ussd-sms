@@ -105,17 +105,6 @@ class Menu
     }
     public function withdrawMoneymenu($textArray)
     {
-
-        foreach ($textArray as $key => $value) {
-            $num = (int) $value;
-            var_dump($num . " \n");
-
-            if (!is_numeric($num)) {
-                ('Invalid entry, not a number!');
-            }
-            ;
-            // return $value;
-        }
         $level = count($textArray);
 
         switch ($level) {
@@ -166,6 +155,7 @@ class Menu
     public function checkBalanceMenu($balance, $textArray)
     {
         $level = count($textArray);
+
         switch ($level) {
             case '1':
                 echo ("CON Enter your PIN.");
@@ -176,6 +166,7 @@ class Menu
                 echo ($response);
                 break;
             default:
+                echo ('Invalid entry, Please try again!');
                 break;
         }
     }
