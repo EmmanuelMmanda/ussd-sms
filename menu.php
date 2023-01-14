@@ -1,16 +1,15 @@
 <?php
 include_once("./util.php");
+include_once("./user.php");
+include_once("./db.php");
 class Menu
 {
     protected $text;
     protected $sessionID;
 
-    function __construct($sessionID, $text)
+    function __construct()
     {
-        $this->sessionID = $sessionID;
-        $this->text = $text;
     }
-
 
     public function mainMenuRegistered($u)
     {
@@ -21,13 +20,13 @@ class Menu
 
         echo ($response);
     }
-    public function mainMenuUnregisterd()
+    public function mainMenuUnregistered()
     {
         $response = "CON You need to be registered to  BROTHERHOOD VIKOBA: \n";
         $response .= "1. Register";
         echo ($response);
     }
-    public function registerMenu($textArray)
+    public function registerMenu($textArray, $phoneNumber, $pdo)
     {
         $level = count($textArray);
         switch ($level) {
@@ -47,9 +46,19 @@ class Menu
                 if ($pin != $confirmPin) {
                     echo ('END Your pins do not match !');
                 } else {
-                    echo ('END You have succesfully registered as ' . $fullname . ' ');
-                }
+                    try {
+                        $user = new User($phoneNumber);
+                        $user->setName($fullname);
+                        $user->setPin($pin);
+                        $user->setBalance(util::$BALANCE);
 
+                        $user->registerNewUser($pdo);
+                        echo ('END You have succesfully registered as ' . $fullname . ' ');
+
+                    } catch (PDOException $e) {
+                        echo $e->getMessage();
+                    }
+                }
                 break;
             default:
                 break;
@@ -105,6 +114,7 @@ class Menu
     }
     public function withdrawMoneymenu($textArray)
     {
+
         $level = count($textArray);
 
         switch ($level) {
@@ -152,23 +162,55 @@ class Menu
         }
     }
 
-    public function checkBalanceMenu($balance, $textArray)
+    public function checkBalanceMenu($balance, $textArray, $pin)
     {
         $level = count($textArray);
 
         switch ($level) {
             case '1':
-                echo ("CON Enter your PIN.");
+                echo ("CON Enter your PIN.\n  ");
                 break;
             case '2':
                 # checking balance
-                $response = "END Your Current balance is: .$balance.\n";
+                $hashedPin = password_hash($textArray[1], PASSWORD_DEFAULT);
+                echo "entered pin-" . $textArray[1]."\n";
+                echo ("database-pin- " . $pin);
+                echo ("\n hashedpin - " . $hashedPin);
+                if ($hashedPin == $pin) {
+                    $response = "\n END Your Current balance is: " . $balance . "\n";
+                } else {
+                    $response = "\n END You have entered an incorrect password";
+                }
                 echo ($response);
                 break;
             default:
                 echo ('Invalid entry, Please try again!');
                 break;
         }
+    }
+
+    public function middleware($text)
+    {
+        return $this->goBack($this->goToMainMenu($text));
+    }
+    public function goBack($text)
+    {
+        //1*2*3*98 => 1*2
+        $explodedText = explode("*", $text);
+        while (array_search(util::$GO_BACK, $explodedText) != false) {
+            $firstIndex = array_search(util::$GO_BACK, $explodedText);
+            array_splice($explodedText, $firstIndex - 1, 2);
+        }
+        return join("*", $explodedText);
+    }
+    public function goToMainMenu($text)
+    {
+        $explodedText = explode("*", $text);
+        while (array_search(util::$MAIN_MENU, $explodedText) != false) {
+            $firstIndex = array_search(util::$MAIN_MENU, $explodedText);
+            $explodedText = array_slice($explodedText, $firstIndex + 1);
+        }
+        return join("*", $explodedText);
     }
 
 }
