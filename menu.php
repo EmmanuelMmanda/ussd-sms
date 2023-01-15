@@ -182,7 +182,7 @@ class Menu
                     }
 
                 } catch (PDOException $e) {
-                    $response = $e;
+                    $response = $e->getMessage();
                 }
                 echo ($response);
                 break;
