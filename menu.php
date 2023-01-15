@@ -162,7 +162,7 @@ class Menu
         }
     }
 
-    public function checkBalanceMenu($balance, $textArray, $pin)
+    public function checkBalanceMenu($balance, $phoneNumber, $textArray, $pin, $pdo)
     {
         $level = count($textArray);
 
@@ -172,12 +172,17 @@ class Menu
                 break;
             case '2':
                 # checking balance
-                $hashedPin = password_hash($textArray[1], PASSWORD_DEFAULT);
-               
-                if ( password_verify($pin,$hashedPin) == true) {
-                    $response = "\n END Your Current balance is: " . $balance . "\n";
-                } else {
-                    $response = "\n END You have entered an incorrect password";
+                try {
+                    $hashedPin = password_hash($textArray[1], PASSWORD_DEFAULT);
+                    $user = new User($phoneNumber);
+                    if ($user->verifyPin($pin, $pdo) == true) {
+                        $response = "\n END Your Current balance is: " . $balance . "\n";
+                    } else {
+                        throw new Error('END You have entered an incorrect password');
+                    }
+
+                } catch (PDOException $e) {
+                    $response = $e;
                 }
                 echo ($response);
                 break;
@@ -210,6 +215,7 @@ class Menu
         }
         return join("*", $explodedText);
     }
+
 
 }
 ?>

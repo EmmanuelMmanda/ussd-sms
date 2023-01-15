@@ -54,7 +54,7 @@ if ($text == "" && !$isRegistered) {
             $menu->withdrawMoneymenu($textArray);
             break;
         case '3':
-            $menu->checkBalanceMenu($balance, $textArray, $pin);
+            $menu->checkBalanceMenu($balance, $phoneNumber, $textArray, $pin, $pdo);
             break;
         default:
             echo ('END You have selected an invalid Option, Please try again.');
@@ -65,7 +65,7 @@ if ($text == "" && !$isRegistered) {
     # code...
     switch ($textArray[0]) {
         case '1':
-            $menu->registerMenu($textArray, $phoneNumber,$pdo);
+            $menu->registerMenu($textArray, $phoneNumber, $pdo);
             break;
         default:
             break;

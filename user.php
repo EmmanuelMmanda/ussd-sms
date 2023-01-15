@@ -91,6 +91,13 @@ class User
         $row = $stmt->fetch();
         return $row['pin'] ?? '';
     }
+    public function verifyPin($pin, $pdo)
+    {
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE phone = ?");
+        $stmt->execute([$this->getPhone()]);
+        $row = $stmt->fetch();
+        return password_verify($pin, $row['pin']);
+    }
 }
 
 ?>
