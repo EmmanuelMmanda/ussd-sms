@@ -173,9 +173,6 @@ class Menu
             case '2':
                 # checking balance
                 $hashedPin = password_hash($textArray[1], PASSWORD_DEFAULT);
-                echo "entered pin-" . $textArray[1]."\n";
-                echo ("database-pin- " . $pin);
-                echo ("\n hashedpin - " . $hashedPin);
                 if ($hashedPin == $pin) {
                     $response = "\n END Your Current balance is: " . $balance . "\n";
                 } else {
