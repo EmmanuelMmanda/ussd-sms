@@ -173,7 +173,8 @@ class Menu
             case '2':
                 # checking balance
                 $hashedPin = password_hash($textArray[1], PASSWORD_DEFAULT);
-                if ($hashedPin !== $pin) {
+               
+                if ( password_verify($pin,$hashedPin) == true) {
                     $response = "\n END Your Current balance is: " . $balance . "\n";
                 } else {
                     $response = "\n END You have entered an incorrect password";
