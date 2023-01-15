@@ -175,7 +175,7 @@ class Menu
                 try {
                     $hashedPin = password_hash($textArray[1], PASSWORD_DEFAULT);
                     $user = new User($phoneNumber);
-                    if ($user->verifyPin($pin, $pdo) == true) {
+                    if ($user->verifyPin($pin, $pdo) !== true) {
                         $response = "\n END Your Current balance is: " . $balance . "\n";
                     } else {
                         $response = "\n END Your have entered an incorrect pin";
