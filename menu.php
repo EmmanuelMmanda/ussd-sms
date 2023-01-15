@@ -178,7 +178,7 @@ class Menu
                     if ($user->verifyPin($pin, $pdo) == true) {
                         $response = "\n END Your Current balance is: " . $balance . "\n";
                     } else {
-                        throw new Error('END You have entered an incorrect password');
+                        throw new Error('END You have entered an incorrect pin');
                     }
 
                 } catch (PDOException $e) {
