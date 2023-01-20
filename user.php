@@ -98,6 +98,13 @@ class User
         $row = $stmt->fetch();
         return password_verify($pin, $row['pin']);
     }
+    public function readUserId($pdo)
+    {
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE phone = ?");
+        $stmt->execute([$this->phone]);
+        $row = $stmt->fetch();
+        return $row['uid'] ?? '';
+    }
 }
 
 ?>

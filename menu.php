@@ -1,4 +1,6 @@
 <?php
+use LDAP\Result;
+
 include_once("./util.php");
 include_once("./user.php");
 include_once("./db.php");
@@ -13,12 +15,12 @@ class Menu
 
     public function mainMenuRegistered($u)
     {
-        $response = "CON Welcome to VICOBA $u \n";
+        $response = "Welcome to VICOBA $u \n";
         $response .= "1. Send Money \n";
         $response .= "2. Withdraw Money \n";
         $response .= "3. Check Balance \n";
 
-        echo ($response);
+        return ($response);
     }
     public function mainMenuUnregistered()
     {
@@ -173,7 +175,7 @@ class Menu
             case '2':
                 # checking balance
                 try {
-                    $hashedPin = password_hash($textArray[1], PASSWORD_DEFAULT);
+                    // $hashedPin = password_hash($textArray[1], PASSWORD_DEFAULT);
                     $user = new User($phoneNumber);
                     if ($user->verifyPin($pin, $pdo) !== true) {
                         $response = "\n END Your Current balance is: " . $balance . "\n";
@@ -181,7 +183,7 @@ class Menu
                         $response = "\n END Your have entered an incorrect pin";
                     }
                 } catch (PDOException $e) {
-                    $response = $e->getMessage();
+                    $response = "END" . $e->getMessage();
                 }
                 echo ($response);
                 break;
@@ -191,9 +193,9 @@ class Menu
         }
     }
 
-    public function middleware($text)
+    public function middleware($text, $sessionID, $user, $pdo)
     {
-        return $this->goBack($this->goToMainMenu($text));
+        return $this->invalidEntry($this->goBack($this->goToMainMenu($text)), $sessionID, $user, $pdo);
     }
     public function goBack($text)
     {
@@ -215,6 +217,33 @@ class Menu
         return join("*", $explodedText);
     }
 
+    public function persistInvalidEntry($pdo, $userId, $sessionID, $sessionLevel)
+    {
+        $sLevel = count($sessionLevel) - 1;
+        $query = "INSERT INTO ussdsessions (sid,sLevel,userId) VALUES (?,?,?)";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([$sessionID, $sLevel, $userId]);
+        $stmt = null;
+    }
 
+    public function invalidEntry($text, $sessionID, $user, $pdo)
+    {
+        $stmt = $pdo->prepare("SELECT sLevel FROM ussdsessions WHERE userId=? AND sid=?");
+        $stmt->execute([$user->readUserId($pdo), $sessionID]);
+        $results = $stmt->fetchAll();
+
+        if (count($results) == 0) {
+
+            return $text;
+        } else {
+            $textArray = explode("*", $text);
+
+            foreach ($results as $value) {
+                unset($textArray[$value['sLevel']]);
+                return join("*", $textArray);
+            }
+
+        }
+    }
 }
 ?>

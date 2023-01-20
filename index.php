@@ -15,8 +15,6 @@ $text = $_POST["text"];
 
 $menu = new Menu();
 
-//handling all text through middleware
-$text = $menu->middleware($text);
 
 $textArray = explode("*", $text);
 
@@ -26,6 +24,11 @@ $pdo = $db->connectDB();
 
 //initiating a user class.
 $user = new User($phoneNumber);
+
+
+//handling all text through middleware
+$text = $menu->middleware($text, $sessionId, $user, $pdo);
+
 
 //check user info.
 $isRegistered = $user->usersIsRegistered($pdo);
@@ -40,7 +43,7 @@ if ($text == "" && !$isRegistered) {
 
 } else if ($text == "" && $isRegistered) {
     # initial and user is registered
-    $menu->mainMenuRegistered($username);
+    echo "CON " . $menu->mainMenuRegistered($username);
 
 } else if ($isRegistered) {
     # sending money #withdrawing money #checking balance
@@ -57,12 +60,11 @@ if ($text == "" && !$isRegistered) {
             $menu->checkBalanceMenu($balance, $phoneNumber, $textArray, $pin, $pdo);
             break;
         default:
-            echo ('END You have selected an invalid Option, Please try again.');
-
+            $menu->persistInvalidEntry($pdo, $user->readUserId($pdo), $sessionId, $textArray);
+            echo "CON Invalid Option, Try again  \n" . $menu->mainMenuRegistered($username);
             break;
     }
 } elseif (!$isRegistered) {
-    # code...
     switch ($textArray[0]) {
         case '1':
             $menu->registerMenu($textArray, $phoneNumber, $pdo);
