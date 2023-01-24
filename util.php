@@ -1,17 +1,17 @@
 <?php
 class util
 {
-    //databbase credentials
-    static $DBHOST = "localhost";
-    static $USERNAME = "alizmmwd_vicoba-developers";
-    static $PASS = "vicoba_live2022";
-    static $DBNAME = "alizmmwd_vikoba-dev";
-
     // //databbase credentials
     // static $DBHOST = "localhost";
-    // static $USERNAME = "root";
-    // static $PASS = "";
-    // static $DBNAME = "ussd-sms";
+    // static $USERNAME = "alizmmwd_vicoba-developers";
+    // static $PASS = "vicoba_live2022";
+    // static $DBNAME = "alizmmwd_vikoba-dev";
+
+    //databbase credentials
+    static $DBHOST = "localhost";
+    static $USERNAME = "root";
+    static $PASS = "";
+    static $DBNAME = "ussd-sms";
 
 
     //constants
@@ -21,10 +21,14 @@ class util
     //initial user balance
 
     static $BALANCE = 4000;
+    static $VAT = 40;
+    static $COUNTRY_CODE = "+255";
+
+    static $phone_regex = "/^\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$/";
 
 
-    //tem numbers
-    //+255760606969
+//Tem numbers
+//+255760606969
 
 }
 ?>

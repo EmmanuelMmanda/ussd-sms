@@ -3,6 +3,7 @@ include_once('./menu.php');
 include_once('./user.php');
 include_once('./db.php');
 
+
 // Read the variables sent via POST from our API
 $sessionId = $_POST["sessionId"];
 $serviceCode = $_POST["serviceCode"];
@@ -26,16 +27,15 @@ $pdo = $db->connectDB();
 $user = new User($phoneNumber);
 
 
-//handling all text through middleware
-$text = $menu->middleware($text, $sessionId, $user, $pdo);
-
-
 //check user info.
 $isRegistered = $user->usersIsRegistered($pdo);
 $balance = $user->readBalance($pdo);
 $username = $user->readUserName($pdo);
 $pin = $user->readPin($pdo);
 
+
+//handling all text through middleware
+$text = $menu->middleware($text, $sessionId, $user, $pdo);
 
 if ($text == "" && !$isRegistered) {
     # initial and user not registered
@@ -47,23 +47,36 @@ if ($text == "" && !$isRegistered) {
 
 } else if ($isRegistered) {
     # sending money #withdrawing money #checking balance
+    if ($textArray[0] == 1) {
+        $menu->sendMoneyMenu($textArray,$phoneNumber,$pdo);
 
-    switch ($textArray[0]) {
+    } else if ($textArray[0] == 2) {
+        $menu->withdrawMoneymenu($textArray);
 
-        case '1':
-            $menu->sendmMoneyMenu($textArray);
-            break;
-        case '2':
-            $menu->withdrawMoneymenu($textArray);
-            break;
-        case '3':
-            $menu->checkBalanceMenu($balance, $phoneNumber, $textArray, $pin, $pdo);
-            break;
-        default:
-            $menu->persistInvalidEntry($pdo, $user->readUserId($pdo), $sessionId, $textArray);
-            echo "CON Invalid Option, Try again  \n" . $menu->mainMenuRegistered($username);
-            break;
+    } else if ($textArray[0] == 3) {
+        $menu->checkBalanceMenu($balance, $phoneNumber, $textArray, $pin, $pdo);
+
+    } else {
+        $menu->persistInvalidEntry($pdo, $user->readUserId($pdo), $sessionId, $textArray);
+        echo "CON Invalid Option, Try again  \n" . $menu->mainMenuRegistered($username);
     }
+
+    // Alternatively use swiitch-case
+    // switch ($textArray[0]) {
+    //     case '1':
+    //         $menu->sendmMoneyMenu($textArray);
+    //         break;
+    //     case '2':
+    //         $menu->withdrawMoneymenu($textArray);
+    //         break;
+    //     case '3':
+    //         $menu->checkBalanceMenu($balance, $phoneNumber, $textArray, $pin, $pdo);
+    //         break;
+    //     default:
+    //         $menu->persistInvalidEntry($pdo, $user->readUserId($pdo), $sessionId, $textArray);
+    //         echo "CON Invalid Option, Try again  \n" . $menu->mainMenuRegistered($username);
+    //         break;
+    // }
 } elseif (!$isRegistered) {
     switch ($textArray[0]) {
         case '1':
@@ -73,5 +86,7 @@ if ($text == "" && !$isRegistered) {
             break;
     }
 }
+
+// echo "\n text at index " . $text;
 
 ?>

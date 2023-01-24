@@ -1,9 +1,10 @@
 <?php
-use LDAP\Result;
 
 include_once("./util.php");
 include_once("./user.php");
 include_once("./db.php");
+include_once("./transactions.php");
+
 class Menu
 {
     protected $text;
@@ -66,102 +67,198 @@ class Menu
                 break;
         }
     }
-    public function sendmMoneyMenu($textArray)
+    public function sendMoneyMenu($textArray, $phoneNumber, $pdo)
     {
 
         $level = count($textArray);
-        echo ("\n");
+        if ($level == 1) {
+            echo ("CON Enter receiver's phone number.");
+        } elseif ($level == 2) {
+            echo ('CON Enter the Amount');
+        } elseif ($level == 3) {
+            echo ('CON Enter your PIN');
+        } elseif ($level == 4) {
+            $phone_Input = $this->addCountryCodeToPhone($textArray[1]);
+            $inputedPin = $textArray[3];
+            $user = new User($phoneNumber);
+            $user->setPin($inputedPin);
+            $pin = $user->getPin();
+            if ($user->verifyPin($pdo) == false) {
+                echo "END You have entered incorrect PIN. Please try again.";
+                return;
+            }
 
-        switch ($level) {
-            case '1':
-                echo ("CON Enter receiver's phone number.");
-                break;
-            case '2':
-                echo ('CON Enter the Amount');
-                break;
-            case '3':
-                echo ('CON Enter your PIN');
-                break;
-            case '4':
-                $r = "CON You are sending " . $textArray[2] . " to " . $textArray[1] . "\n";
+            $receiver_phone_number = $this->validatePhoneNumber($phone_Input);
+
+            if ($receiver_phone_number) {
+                //getting receiver name 
+                $receiver = new User($receiver_phone_number);
+                $receiver_Name = $receiver->readUserName($pdo);
+
+
+                $r = "CON You are sending Tsh " . $textArray[2] . " to " . $receiver_Name . " - " . $receiver_phone_number . " with a fee of 50 Tsh \n";
                 $r .= "1. Confirm \n";
                 $r .= "2. Cancel \n";
                 $r .= util::$GO_BACK . " Go back \n";
                 $r .= util::$MAIN_MENU . " Main Menu";
                 echo ($r);
-                break;
-            case '5':
-                if ($textArray[4] == 1) {
-                    # confirmation
-                    echo ('END Your request is being proccessed');
-                } elseif ($textArray[4] == 2) {
-                    # cancelation
-                    echo ('END Cancelled :: Thank you!');
+            } else {
+                echo "\n  END Invalid Phone-Number format. Correct format is 07xxx";
+            }
 
-                } elseif ($textArray[4] == 3) {
-                    # Go back one step - to pin
-                    echo ('END Your will go back to pin');
+        } elseif ($level == 5) {
+            if ($textArray[4] == 1) {
+                # confirmation
+                //getting sender info
+                $user = new User($phoneNumber);
+                $uid = $user->readUserId($pdo);
+                $senderBalance = $user->getBalance();
 
+                //getting receiver user info.
+                $receiver = new User($this->addCountryCodeToPhone($textArray[1]));
+                $ruid = $receiver->readUserId($pdo);
+                $receiver_Balance = $receiver->getBalance();
 
-                } elseif ($textArray[4] == 4) {
-                    # Go back to main menu
-                    echo ('END You will be at main menu soon');
+                //managing transaction
+                $ttype = "send_money";
+                $amount = $textArray[2];
+                $txn = new Transaction($ttype, $amount);
+
+                $result = $txn->sendMoney($pdo, $uid, $ruid, $senderBalance, $receiver_Balance);
+
+                if ($result == true) {
+                    echo ('END Your request is being proccessed.You will be notified shortly via SMS');
+                    //send an sms to user and receiver
+                } else {
+                    echo "CON" . $result;
                 }
 
-                break;
-            default:
-                echo ('END Invalid entry');
-                break;
+            } elseif ($textArray[4] == 2) {
+                # cancelation
+                echo ('END Cancelled :: Thank you!');
+            }
+        } else {
+            echo "END Invalid input";
         }
+
+        // switch ($level) {
+        //     case '1':
+        //         echo ("CON Enter receiver's phone number.");
+        //         break;
+        //     case '2':
+        //         echo ('CON Enter the Amount');
+        //         break;
+        //     case '3':
+        //         echo ('CON Enter your PIN');
+        //         break;
+        //     case '4':
+        //         $r = "CON You are sending " . $textArray[2] . " to " . $textArray[1] . "\n";
+        //         $r .= "1. Confirm \n";
+        //         $r .= "2. Cancel \n";
+        //         $r .= util::$GO_BACK . " Go back \n";
+        //         $r .= util::$MAIN_MENU . " Main Menu";
+        //         echo ($r);
+        //         break;
+        //     case '5':
+        //         if ($textArray[4] == 1) {
+        //             # confirmation
+        //             echo ('END Your request is being proccessed');
+        //         } elseif ($textArray[4] == 2) {
+        //             # cancelation
+        //             echo ('END Cancelled :: Thank you!');
+
+        //         } elseif ($textArray[4] == 3) {
+        //             # Go back one step - to pin
+        //             echo ('END Your will go back to pin');
+
+
+        //         } elseif ($textArray[4] == 4) {
+        //             # Go back to main menu
+        //             echo ('END You will be at main menu soon');
+        //         }
+
+        //         break;
+        //     default:
+        //         echo ('END Invalid entry');
+        //         break;
+        // }
     }
     public function withdrawMoneymenu($textArray)
     {
 
         $level = count($textArray);
+        if ($level == 1) {
+            echo ("CON Enter Agents's Number");
 
-        switch ($level) {
-            case '1':
-                echo ("CON Enter Agents's Number");
-                break;
-            case '2':
-                echo ('CON Enter the Amount');
-                break;
-            case '3':
-                echo ('CON Enter your PIN');
-                break;
-            case '4':
-                $r = "CON You are withrawing " . $textArray[2] . " from Agent " . $textArray[1] . "\n";
-                $r .= "1. Confirm \n";
-                $r .= "2. Cancel \n";
-                $r .= util::$GO_BACK . " Go back \n";
-                $r .= util::$MAIN_MENU . " Main Menu";
-                echo ($r);
-                break;
-            case '5':
-                if ($textArray[4] == 1) {
-                    # confirmation
-                    echo ('END Your withdraw request is being processed');
-                } elseif ($textArray[4] == 2) {
-                    # cancelation
-                    echo ('END Cancelled :: Thank you !');
+        } elseif ($level == 2) {
+            echo ('CON Enter the Amount');
 
-                } elseif ($textArray[4] == 3) {
-                    # Go back one step - to pin
-                    echo ('END Your will go back to pin');
+        } elseif ($level == 3) {
+            echo ('CON Enter your PIN');
 
+        } elseif ($level == 4) {
+            $r = "CON You are withrawing " . $textArray[2] . " from Agent " . $textArray[1] . "\n";
+            $r .= "1. Confirm \n";
+            $r .= "2. Cancel \n";
+            $r .= util::$GO_BACK . " Go back \n";
+            $r .= util::$MAIN_MENU . " Main Menu";
+            echo ($r);
+        } elseif ($level == 5) {
+            if ($textArray[4] == 1) {
+                # confirmation
+                echo ('END Your withdraw request is being processed');
+            } elseif ($textArray[4] == 2) {
+                # cancelation
+                echo ('END Cancelled :: Thank you !');
+            }
+        } else {
+            echo ('Invalid entry, Please try again!');
 
-                } elseif ($textArray[4] == 4) {
-                    # Go back to main menu
-                    echo ('END You will be at main menu soon');
-                } else {
-                    echo ('Invalid entry !');
-                }
-                break;
-
-            default:
-                echo ('Invalid entry, Please try again!');
-                break;
         }
+
+        // switch ($level) {
+        //     case '1':
+        //         echo ("CON Enter Agents's Number");
+        //         break;
+        //     case '2':
+        //         echo ('CON Enter the Amount');
+        //         break;
+        //     case '3':
+        //         echo ('CON Enter your PIN');
+        //         break;
+        //     case '4':
+        //         $r = "CON You are withrawing " . $textArray[2] . " from Agent " . $textArray[1] . "\n";
+        //         $r .= "1. Confirm \n";
+        //         $r .= "2. Cancel \n";
+        //         $r .= util::$GO_BACK . " Go back \n";
+        //         $r .= util::$MAIN_MENU . " Main Menu";
+        //         echo ($r);
+        //         break;
+        //     case '5':
+        //         if ($textArray[4] == 1) {
+        //             # confirmation
+        //             echo ('END Your withdraw request is being processed');
+        //         } elseif ($textArray[4] == 2) {
+        //             # cancelation
+        //             echo ('END Cancelled :: Thank you !');
+
+        //         }
+        //     //  elseif ($textArray[4] == 3) {
+        //     //     # Go back one step - to pin
+        //     //     echo ('END Your will go back to pin');
+
+
+        //     // } elseif ($textArray[4] == 4) {
+        //     //     # Go back to main menu
+        //     //     echo ('END You will be at main menu soon');
+        //     // } else {
+        //     //     echo ('Invalid entry !');
+        //     // }
+
+        //     default:
+        //         echo ('Invalid entry, Please try again!');
+        //         break;
+        // }
     }
 
     public function checkBalanceMenu($balance, $phoneNumber, $textArray, $pin, $pdo)
@@ -175,9 +272,10 @@ class Menu
             case '2':
                 # checking balance
                 try {
-                    // $hashedPin = password_hash($textArray[1], PASSWORD_DEFAULT);
                     $user = new User($phoneNumber);
-                    if ($user->verifyPin($pin, $pdo) !== true) {
+                    $user->setPin($textArray[1]);
+
+                    if ($user->verifyPin($pdo) == true) {
                         $response = "\n END Your Current balance is: " . $balance . "\n";
                     } else {
                         $response = "\n END Your have entered an incorrect pin";
@@ -233,16 +331,30 @@ class Menu
         $results = $stmt->fetchAll();
 
         if (count($results) == 0) {
-
             return $text;
+        }
+
+        $strArray = explode("*", $text);
+
+        foreach ($results as $value) {
+            unset($strArray[$value['sLevel']]);
+        }
+
+        $textArray = array_values($strArray);
+
+        return join("*", $textArray);
+    }
+
+    public function addCountryCodeToPhone($phone)
+    {
+        return $phone_number = util::$COUNTRY_CODE . substr($phone, 1);
+    }
+    public function validatePhoneNumber($phone)
+    {
+        if (preg_match(util::$phone_regex, $phone) == 1) {
+            return true;
         } else {
-            $textArray = explode("*", $text);
-
-            foreach ($results as $value) {
-                unset($textArray[$value['sLevel']]);
-                return join("*", $textArray);
-            }
-
+            return false;
         }
     }
 }
