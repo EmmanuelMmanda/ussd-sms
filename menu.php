@@ -90,18 +90,18 @@ class Menu
 
             $receiver_phone_number = $this->validatePhoneNumber($phone_Input);
 
-            if ($receiver_phone_number) {
+            if ($receiver_phone_number == 1) {
                 //getting receiver name 
-                $receiver = new User($receiver_phone_number);
+                $receiver = new User($phone_Input);
                 $receiver_Name = $receiver->readUserName($pdo);
 
-
-                $r = "CON You are sending Tsh " . $textArray[2] . " to " . $receiver_Name . " - " . $receiver_phone_number . " with a fee of 50 Tsh \n";
+                $r = "CON You are sending Tsh " . $textArray[2] . " to " . $receiver_Name . " - " .$phone_Input. " with a fee of 50 Tsh \n";
                 $r .= "1. Confirm \n";
                 $r .= "2. Cancel \n";
                 $r .= util::$GO_BACK . " Go back \n";
                 $r .= util::$MAIN_MENU . " Main Menu";
                 echo ($r);
+
             } else {
                 echo "\n  END Invalid Phone-Number format. Correct format is 07xxx";
             }
@@ -129,6 +129,7 @@ class Menu
                 if ($result == true) {
                     echo ('END Your request is being proccessed.You will be notified shortly via SMS');
                     //send an sms to user and receiver
+                    
                 } else {
                     echo "CON" . $result;
                 }
