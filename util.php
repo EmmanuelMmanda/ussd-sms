@@ -7,7 +7,7 @@ class util
     static $PASS = "vicoba_live2022";
     static $DBNAME = "alizmmwd_vikoba-dev";
 
-    //databbase credentials
+    // //databbase credentials
     // static $DBHOST = "localhost";
     // static $USERNAME = "root";
     // static $PASS = "";
@@ -21,7 +21,7 @@ class util
     //initial user balance
 
     static $BALANCE = 4000;
-    static $VAT = 40;
+    static $VAT = 50;
     static $COUNTRY_CODE = "+255";
 
     static $phone_regex = "/^\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$/";

@@ -69,7 +69,8 @@ class Menu
     }
     public function sendMoneyMenu($textArray, $phoneNumber, $pdo)
     {
-
+        $ttype = "";
+        $amount = '';
         $level = count($textArray);
         if ($level == 1) {
             echo ("CON Enter receiver's phone number.");
@@ -95,7 +96,7 @@ class Menu
                 $receiver = new User($phone_Input);
                 $receiver_Name = $receiver->readUserName($pdo);
 
-                $r = "CON You are sending Tsh " . $textArray[2] . " to " . $receiver_Name . " - " .$phone_Input. " with a fee of 50 Tsh \n";
+                $r = "CON You are sending Tsh " . $textArray[2] . " to " . $receiver_Name . " - " . $phone_Input . " with a fee of 50 Tsh \n";
                 $r .= "1. Confirm \n";
                 $r .= "2. Cancel \n";
                 $r .= util::$GO_BACK . " Go back \n";
@@ -112,24 +113,25 @@ class Menu
                 //getting sender info
                 $user = new User($phoneNumber);
                 $uid = $user->readUserId($pdo);
-                $senderBalance = $user->getBalance();
+                $senderBalance = $user->readBalance($pdo);
 
                 //getting receiver user info.
                 $receiver = new User($this->addCountryCodeToPhone($textArray[1]));
                 $ruid = $receiver->readUserId($pdo);
-                $receiver_Balance = $receiver->getBalance();
+                $receiver_Balance = $receiver->readBalance($pdo);
 
                 //managing transaction
                 $ttype = "send_money";
                 $amount = $textArray[2];
                 $txn = new Transaction($ttype, $amount);
+                echo '';
 
                 $result = $txn->sendMoney($pdo, $uid, $ruid, $senderBalance, $receiver_Balance);
 
-                if ($result == true) {
+                if ($result) {
                     echo ('END Your request is being proccessed.You will be notified shortly via SMS');
                     //send an sms to user and receiver
-                    
+
                 } else {
                     echo "CON" . $result;
                 }
